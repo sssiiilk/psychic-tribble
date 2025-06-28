@@ -77,7 +77,7 @@ const CompanyInfoSection = () => (
     <CompanyInfo>
       <InfoSection>
         <InfoLeft>
-          <InfoTitle>Мой ЖК</InfoTitle>
+          <InfoTitle>ЖК застройщика "Фундамент Групп"</InfoTitle>
           <InfoTitle>Статистика продаж</InfoTitle>
           <InfoTitle>Статистика ЖК</InfoTitle>
         </InfoLeft>
