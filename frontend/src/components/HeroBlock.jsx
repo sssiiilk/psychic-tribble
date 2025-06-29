@@ -22,7 +22,7 @@ const Centered = styled.div`
 const Title = styled.h1`
   color: #fff;
   font-size: 64px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin: 0 0 16px 0;
   text-shadow: 0 4px 24px rgba(0,0,0,0.5);
 `;
@@ -30,7 +30,7 @@ const Title = styled.h1`
 const Subtitle = styled.h2`
   color: #fff;
   font-size: 48px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin: 0 0 8px 0;
   text-shadow: 0 4px 24px rgba(0,0,0,0.5);
 `;
@@ -38,7 +38,7 @@ const Subtitle = styled.h2`
 const Subtitle2 = styled.h3`
   color: #fff;
   font-size: 48px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin: 0;
   text-shadow: 0 4px 24px rgba(0,0,0,0.5);
 `;

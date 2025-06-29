@@ -25,10 +25,10 @@ const CardsRow = styled.div`
   }
 `;
 
-// Пример данных (можно заменить на реальные)
+// прмиер данных
 const offers = [
   {
-    img: 'https://i.imgur.com/8QfQF5F.png',
+    img: '',
     title: '2-к. квартира',
     price: '15.000.000 Р',
     group: 'GROUP',
@@ -37,7 +37,7 @@ const offers = [
     popular: true
   },
   {
-    img: 'https://i.imgur.com/8QfQF5F.png',
+    img: '',
     title: '2-к. квартира',
     price: '15.000.000 Р',
     group: 'GROUP',
@@ -46,7 +46,7 @@ const offers = [
     popular: false
   },
   {
-    img: 'https://i.imgur.com/8QfQF5F.png',
+    img: '',
     title: '2-к. квартира',
     price: '15.000.000 Р',
     group: 'GROUP',
@@ -55,7 +55,7 @@ const offers = [
     popular: false
   },
   {
-    img: 'https://i.imgur.com/8QfQF5F.png',
+    img: '',
     title: '2-к. квартира',
     price: '15.000.000 Р',
     group: 'GROUP',

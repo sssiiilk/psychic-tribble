@@ -17,7 +17,7 @@ const Wrapper = styled.section`
 
 const Title = styled.h2`
   font-size: 48px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   font-weight: 700;
   margin-bottom: 32px;
   margin-top: 0;
@@ -49,12 +49,14 @@ const SearchRow = styled.div`
 const Select = styled.select`
   flex: 1;
   min-width: 220px;
-  padding: 16px 24px;
-  border: 2px solid #eee;
-  border-radius: 24px;
-  font-size: 18px;
-  font-family: 'League Spartan', Arial, sans-serif;
   background: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-family: 'Acrom', Arial, sans-serif;
+  color: #333;
+  cursor: pointer;
   appearance: none;
   outline: none;
   margin-right: 0;
@@ -63,7 +65,7 @@ const Select = styled.select`
     min-width: 0;
     width: 100%;
     font-size: 16px;
-    padding: 12px 16px;
+    padding: 15px 20px;
   }
 `;
 
@@ -74,7 +76,7 @@ const SearchButton = styled.button`
   border-radius: 20px;
   padding: 0 48px;
   font-size: 18px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   cursor: pointer;
   transition: background 0.2s;
   margin-left: 0;
@@ -131,7 +133,7 @@ const PopularOffers = () => (
       </Select>
       <SearchButton>Искать</SearchButton>
     </SearchRow>
-    <MapImg src="https://i.imgur.com/1n6bQpA.png" alt="Карта города" />
+    <MapImg src="" alt="Карта города" />
     <OffersCarousel />
   </Wrapper>
 );

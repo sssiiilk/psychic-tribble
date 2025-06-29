@@ -1,0 +1,71 @@
+@font-face {
+    font-family: 'Acrom';
+    src: url('./Acrom-Thin.eot');
+    src: url('./Acrom-Thin.eot?#iefix') format('embedded-opentype'),
+         url('./Acrom-Thin.woff2') format('woff2'),
+         url('./Acrom-Thin.woff') format('woff'),
+         url('./Acrom-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Acrom';
+    src: url('./Acrom-Light.eot');
+    src: url('./Acrom-Light.eot?#iefix') format('embedded-opentype'),
+         url('./Acrom-Light.woff2') format('woff2'),
+         url('./Acrom-Light.woff') format('woff'),
+         url('./Acrom-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Acrom';
+    src: url('./Acrom-Regular.eot');
+    src: url('./Acrom-Regular.eot?#iefix') format('embedded-opentype'),
+         url('./Acrom-Regular.woff2') format('woff2'),
+         url('./Acrom-Regular.woff') format('woff'),
+         url('./Acrom-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Acrom';
+    src: url('./Acrom-Medium.eot');
+    src: url('./Acrom-Medium.eot?#iefix') format('embedded-opentype'),
+         url('./Acrom-Medium.woff2') format('woff2'),
+         url('./Acrom-Medium.woff') format('woff'),
+         url('./Acrom-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Acrom';
+    src: url('./Acrom-Bold.eot');
+    src: url('./Acrom-Bold.eot?#iefix') format('embedded-opentype'),
+         url('./Acrom-Bold.woff2') format('woff2'),
+         url('./Acrom-Bold.woff') format('woff'),
+         url('./Acrom-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Acrom';
+    src: url('./Acrom-ExtraBold.eot');
+    src: url('./Acrom-ExtraBold.eot?#iefix') format('embedded-opentype'),
+         url('./Acrom-ExtraBold.woff2') format('woff2'),
+         url('./Acrom-ExtraBold.woff') format('woff'),
+         url('./Acrom-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+} 

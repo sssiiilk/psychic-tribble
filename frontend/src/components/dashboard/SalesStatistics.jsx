@@ -10,31 +10,32 @@ const ChartContainer = styled.div`
 
 const ChartTitle = styled.h3`
   font-size: 1.5rem;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   font-weight: 700;
-  margin: 0 0 20px 0;
+  margin: 0 0 30px 0;
   color: #333;
 `;
 
 const ChartFilters = styled.div`
   display: flex;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   flex-wrap: wrap;
 `;
 
 const FilterButton = styled.button`
-  border: 1px solid #ddd;
-  background: ${props => props.active ? '#38646b' : '#fff'};
-  color: ${props => props.active ? '#fff' : '#666'};
+  background: ${props => props.active ? '#5a7c85' : '#f5f5f5'};
+  border: none;
   border-radius: 20px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-family: 'Acrom', Arial, sans-serif;
+  color: ${props => props.active ? '#fff' : '#666'};
   cursor: pointer;
   transition: all 0.2s;
   
   &:hover {
-    background: #38646b;
+    background: #5a7c85;
     color: #fff;
   }
 `;
@@ -42,55 +43,101 @@ const FilterButton = styled.button`
 const PieChartContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 60px;
   
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
   }
 `;
 
+const PieChartWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const PieChart = styled.div`
-  width: 200px;
-  height: 200px;
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
   background: conic-gradient(
-    #38646b 0deg 166deg,
-    #9B1743 166deg 223deg,
-    #7a7a7a 223deg 280deg,
-    #b3b3b3 280deg 360deg
+    #638b96 0deg 90deg,
+    #c288a6 90deg 180deg,
+    #5a7c6b 180deg 220deg,
+    #9B1743 220deg 310deg,
+    #2f5f6f 310deg 360deg
   );
   position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+`;
+
+const ChartValue = styled.div`
+  position: absolute;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+  pointer-events: none;
+  
+  &.value-184 {
+    top: 15%;
+    left: 75%;
+  }
+  
+  &.value-473 {
+    top: 45%;
+    right: -15%;
+  }
+  
+  &.value-167 {
+    bottom: 25%;
+    right: 15%;
+  }
+  
+  &.value-364 {
+    bottom: 10%;
+    left: 15%;
+  }
+  
+  &.value-775 {
+    top: 25%;
+    left: -15%;
+  }
 `;
 
 const Legend = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  min-width: 150px;
 `;
 
 const LegendItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 0.95rem;
+  font-family: 'Acrom', Arial, sans-serif;
+  color: #333;
 `;
 
 const LegendColor = styled.div`
   width: 16px;
   height: 16px;
-  border-radius: 2px;
+  border-radius: 3px;
   background: ${props => props.color};
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 `;
 
 const SalesStatistics = () => {
-  const [salesFilter, setSalesFilter] = useState('По микрорайону');
+  const [salesFilter, setSalesFilter] = useState('По квартирам');
 
   return (
     <ChartContainer>
       <ChartTitle>Статистика продаж</ChartTitle>
       <ChartFilters>
-        {['По микрорайону', 'По застройщик', 'По жилым комплексам'].map(filter => (
+        {['По квартирам', 'По жилым комплексам', 'По микрорайону'].map(filter => (
           <FilterButton 
             key={filter}
             active={salesFilter === filter}
@@ -101,26 +148,33 @@ const SalesStatistics = () => {
         ))}
       </ChartFilters>
       <PieChartContainer>
-        <PieChart />
+        <PieChartWrapper>
+          <PieChart />
+          <ChartValue className="value-184">184</ChartValue>
+          <ChartValue className="value-473">473</ChartValue>
+          <ChartValue className="value-167">167</ChartValue>
+          <ChartValue className="value-364">364</ChartValue>
+          <ChartValue className="value-775">775</ChartValue>
+        </PieChartWrapper>
         <Legend>
           <LegendItem>
-            <LegendColor color="#38646b" />
+            <LegendColor color="#e0e0e0" />
             Студии
           </LegendItem>
           <LegendItem>
-            <LegendColor color="#9B1743" />
+            <LegendColor color="#c0c0c0" />
             1-к квартиры
           </LegendItem>
           <LegendItem>
-            <LegendColor color="#7a7a7a" />
+            <LegendColor color="#a0a0a0" />
             2-к квартиры
           </LegendItem>
           <LegendItem>
-            <LegendColor color="#b3b3b3" />
-            3-к квартиры
+            <LegendColor color="#808080" />
+            3-к квартиры  
           </LegendItem>
           <LegendItem>
-            <LegendColor color="#d4d4d4" />
+            <LegendColor color="#606060" />
             4-к квартиры
           </LegendItem>
         </Legend>

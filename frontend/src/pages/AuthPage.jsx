@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import GlobalStyle from '../components/GlobalStyle';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+import Footer from '../components/Footer';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -36,6 +37,7 @@ const AuthPage = () => {
           onRegisterSuccess={handleAuthSuccess}
         />
       )}
+      <Footer />
     </>
   );
 };

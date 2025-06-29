@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const Card = styled.div`
   background: #fff;
@@ -38,22 +39,35 @@ const Content = styled.div`
 
 const Title = styled.h3`
   font-size: 2rem;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   font-weight: 700;
   margin: 0 0 8px 0;
 `;
 
 const Price = styled.div`
   font-size: 1.3rem;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin-bottom: 18px;
   letter-spacing: 1px;
 `;
 
-const Group = styled.div`
+const Group = styled.button`
   font-weight: bold;
   font-size: 1.1rem;
   margin-bottom: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: #9B1743;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-family: 'Acrom', Arial, sans-serif;
+  
+  &:hover {
+    color: #7a1234;
+    text-decoration: underline;
+  }
 `;
 
 const Desc = styled.div`
@@ -67,19 +81,22 @@ const City = styled.div`
 `;
 
 const Button = styled.button`
-  background: #38646b;
-  color: #fff;
-  border: none;
-  border-radius: 16px;
-  padding: 12px 0;
-  font-size: 1.1rem;
-  font-family: 'League Spartan', Arial, sans-serif;
+  background: #fff;
+  color: #5a7c85;
+  border: 2px solid #5a7c85;
+  border-radius: 20px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-family: 'Acrom', Arial, sans-serif;
+  font-weight: 600;
   cursor: pointer;
   margin-top: auto;
-  transition: background 0.2s;
+  transition: all 0.2s;
   width: 100%;
+  
   &:hover {
-    background: #27474b;
+    background: #5a7c85;
+    color: #fff;
   }
 `;
 
@@ -90,7 +107,7 @@ const Badge = styled.div`
   background: #e6f3e6;
   color: #38646b;
   font-size: 1rem;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   border-radius: 16px;
   padding: 4px 18px;
   font-weight: 500;
@@ -111,23 +128,54 @@ const OfferCard = ({
   desc,
   city,
   popular
-}) => (
-  <CardWrapper>
-    {popular && <Badge>💡 Популярно</Badge>}
-    <Card>
-      <ImageWrapper>
-        <Img src={img} alt={title} />
-      </ImageWrapper>
-      <Content>
-        <Title>{title}</Title>
-        <Price>{price}</Price>
-        <Group>{group}</Group>
-        <Desc>{desc}</Desc>
-        <City>{city}</City>
-        <Button>Подробнее</Button>
-      </Content>
-    </Card>
-  </CardWrapper>
-);
+}) => {
+  const navigate = useNavigate();
+
+  const handleDeveloperClick = () => {
+    // Перенаправляем на профиль застройщика
+    navigate('/developer-dashboard', { 
+      state: { 
+        developerName: group,
+        fromOffer: true 
+      } 
+    });
+  };
+
+  const handleDetailsClick = () => {
+    // Перенаправляем на страницу деталей квартиры
+    // Используем закодированный title как id для маршрута
+    const propertyId = encodeURIComponent(title.replace(/\s+/g, '-').toLowerCase());
+    navigate(`/property/${propertyId}`, {
+      state: {
+        title,
+        price,
+        group,
+        desc,
+        city,
+        img,
+        popular
+      }
+    });
+  };
+
+  return (
+    <CardWrapper>
+      {popular && <Badge>💡 Популярно</Badge>}
+      <Card>
+        <ImageWrapper>
+          <Img src={img} alt={title} />
+        </ImageWrapper>
+        <Content>
+          <Title>{title}</Title>
+          <Price>{price}</Price>
+          <Group onClick={handleDeveloperClick}>{group}</Group>
+          <Desc>{desc}</Desc>
+          <City>{city}</City>
+          <Button onClick={handleDetailsClick}>Подробнее</Button>
+        </Content>
+      </Card>
+    </CardWrapper>
+  );
+};
 
 export default OfferCard; 

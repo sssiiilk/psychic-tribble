@@ -2,6 +2,7 @@ import GlobalStyle from '../components/GlobalStyle';
 import Header from '../components/Header';
 import HeroBlock from '../components/HeroBlock';
 import PopularOffers from '../components/PopularOffers';
+import Footer from '../components/Footer';
 
 const MainPage = () => (
   <>
@@ -9,6 +10,7 @@ const MainPage = () => (
     <Header />
     <HeroBlock />
     <PopularOffers />
+    <Footer />
   </>
 );
 

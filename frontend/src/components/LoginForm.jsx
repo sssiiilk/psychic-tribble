@@ -10,6 +10,7 @@ const FormContainer = styled.div`
   padding: 20px;
 `;
 
+
 const FormWrapper = styled.div`
   background: rgba(255, 255, 255, 0.98);
   padding: 48px;
@@ -27,7 +28,7 @@ const FormWrapper = styled.div`
 const Title = styled.h1`
   color: #9B1743;
   font-size: 32px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   font-weight: 700;
   text-align: center;
   margin: 0 0 32px 0;
@@ -53,26 +54,26 @@ const InputGroup = styled.div`
 const Label = styled.label`
   color: #333;
   font-size: 16px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   font-weight: 400;
 `;
 
 const Input = styled.input`
-  padding: 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  font-size: 16px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: 'Acrom', Arial, sans-serif;
   transition: border-color 0.2s;
   background: #fff;
 
   &:focus {
     outline: none;
-    border-color: #9B1743;
+    border-color: #5a7c85;
   }
 
   &::placeholder {
-    color: #888;
+    color: #999;
   }
 `;
 
@@ -83,7 +84,7 @@ const SubmitButton = styled.button`
   border-radius: 12px;
   padding: 16px;
   font-size: 18px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
@@ -103,7 +104,7 @@ const SubmitButton = styled.button`
 const LinkText = styled.p`
   text-align: center;
   color: #666;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin-top: 24px;
 `;
 
@@ -111,7 +112,7 @@ const Link = styled.button`
   background: none;
   border: none;
   color: #9B1743;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
@@ -127,7 +128,7 @@ const ErrorMessage = styled.div`
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid #ffcdd2;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin-bottom: 16px;
 `;
 
@@ -137,7 +138,7 @@ const SuccessMessage = styled.div`
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid #c8e6c9;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin-bottom: 16px;
 `;
 
@@ -179,7 +180,7 @@ const LoginForm = ({ onSwitchToRegister, onLoginSuccess }) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        // Отправляем событие об изменении состояния авторизации
+        
         window.dispatchEvent(new Event('authStateChange'));
         
         setTimeout(() => {

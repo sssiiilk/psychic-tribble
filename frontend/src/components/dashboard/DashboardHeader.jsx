@@ -31,7 +31,7 @@ const NavButton = styled.button`
   border-radius: 20px;
   padding: 12px 24px;
   font-size: 14px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   cursor: pointer;
   transition: background 0.2s;
   white-space: nowrap;

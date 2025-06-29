@@ -41,7 +41,7 @@ const NavButton = styled.button`
   border-radius: 20px;
   padding: 12px 48px;
   font-size: 18px;
-  font-family: 'League Spartan', Arial, sans-serif;
+  font-family: 'Acrom', Arial, sans-serif;
   margin-bottom: 20px;
   cursor: pointer;
   transition: background 0.2s;
@@ -108,6 +108,10 @@ const Header = () => {
     navigate('/');
   };
 
+  const handleSearchClick = () => {
+    navigate('/search');
+  };
+
   const handleLoginClick = () => {
     navigate('/auth');
   };
@@ -133,7 +137,7 @@ const Header = () => {
       <NavButton onClick={handleLogoClick}>Логотип</NavButton>
       <NavGroup>
         <NavButton onClick={handlePersonalCabinetClick}>Личный кабинет</NavButton>
-        <NavButton>Поиск недвижимости</NavButton>
+        <NavButton onClick={handleSearchClick}>Поиск недвижимости</NavButton>
       </NavGroup>
       {isAuthenticated ? (
         <NavButton onClick={handleLogoutClick}>
