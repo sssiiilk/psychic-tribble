@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import logo from '../assets/logo.png';
 
 const HeaderWrapper = styled.header`
   width: 100%;
@@ -54,6 +55,23 @@ const NavButton = styled.button`
     margin-bottom: 8px;
     padding: 12px 0;
     font-size: 16px;
+  }
+`;
+
+const Logo = styled.img`
+  height: 46px;
+  width: auto;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 600px) {
+    height: 40px;
+    margin-bottom: 8px;
   }
 `;
 
@@ -134,7 +152,7 @@ const Header = () => {
 
   return (
     <HeaderWrapper>
-      <NavButton onClick={handleLogoClick}>Логотип</NavButton>
+      <Logo src={logo} alt="ClickHouse Logo" onClick={handleLogoClick} />
       <NavGroup>
         <NavButton onClick={handlePersonalCabinetClick}>Личный кабинет</NavButton>
         <NavButton onClick={handleSearchClick}>Поиск недвижимости</NavButton>

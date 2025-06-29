@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import GlobalStyle from '../components/GlobalStyle';
 import Header from '../components/Header';
@@ -316,14 +316,19 @@ const SaveButton = styled.button`
   }
 `;
 
-const properties = [
+const allProperties = [
   {
     id: 1,
     title: 'ЖК "Жилой комплекс"',
     developer: 'ООО "Застройщик"',
     location: 'Краснодарский край\nг. Краснодар',
     price: '180 000 ₽',
+    pricePerSqm: 180000,
     type: 'квартира',
+    region: 'krasnodar',
+    city: 'krasnodar',
+    yearBuilt: 2025,
+    features: ['metro', 'school'],
     image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
   },
   {
@@ -332,7 +337,54 @@ const properties = [
     developer: 'ООО "Застройщик"',
     location: 'Краснодарский край\nг. Краснодар',
     price: '180 000 ₽',
+    pricePerSqm: 180000,
     type: 'квартира',
+    region: 'krasnodar',
+    city: 'krasnodar',
+    yearBuilt: 2026,
+    features: ['park'],
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+  },
+  {
+    id: 3,
+    title: 'ЖК "Лесные Террасы"',
+    developer: 'ООО "ГеоСтрой"',
+    location: 'Краснодарский край\nг. Сочи',
+    price: '220 000 ₽',
+    pricePerSqm: 220000,
+    type: 'квартира',
+    region: 'krasnodar',
+    city: 'sochi',
+    yearBuilt: 2027,
+    features: ['park', 'school'],
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+  },
+  {
+    id: 4,
+    title: 'ЖК "Московские высоты"',
+    developer: 'ООО "МосСтрой"',
+    location: 'Московская область\nг. Москва',
+    price: '320 000 ₽',
+    pricePerSqm: 320000,
+    type: 'квартира',
+    region: 'moscow',
+    city: 'moscow',
+    yearBuilt: 2025,
+    features: ['metro'],
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+  },
+  {
+    id: 5,
+    title: 'Коттеджный поселок "Дубрава"',
+    developer: 'ООО "Домстрой"',
+    location: 'Ленинградская область\nг. Санкт-Петербург',
+    price: '150 000 ₽',
+    pricePerSqm: 150000,
+    type: 'дом',
+    region: 'spb',
+    city: 'spb',
+    yearBuilt: 2026,
+    features: ['park'],
     image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
   }
 ];
@@ -347,6 +399,11 @@ const SearchPage = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [favorites, setFavorites] = useState(new Set());
   const navigate = useNavigate();
+
+  // Очищаем выбранный город при смене региона
+  useEffect(() => {
+    setSelectedCity('');
+  }, [selectedRegion]);
 
   const toggleFavorite = (id) => {
     const newFavorites = new Set(favorites);
@@ -379,6 +436,61 @@ const SearchPage = () => {
     // Показываем уведомление пользователю
     alert('Фильтры сохранены!');
   };
+
+  // Фильтрация недвижимости
+  const filteredProperties = useMemo(() => {
+    return allProperties.filter(property => {
+      // Фильтр по региону
+      if (selectedRegion && property.region !== selectedRegion) {
+        return false;
+      }
+      
+      // Фильтр по городу
+      if (selectedCity && property.city !== selectedCity) {
+        return false;
+      }
+      
+      // Фильтр по дополнительным критериям
+      if (selectedExtra && !property.features.includes(selectedExtra)) {
+        return false;
+      }
+      
+      // Фильтр по типу объектов
+      if (!propertyType.apartments && property.type === 'квартира') {
+        return false;
+      }
+      if (!propertyType.houses && property.type === 'дом') {
+        return false;
+      }
+      
+      // Фильтр по году сдачи
+      const yearMatch = (yearFilter.y2025 && property.yearBuilt === 2025) ||
+                       (yearFilter.y2026 && property.yearBuilt === 2026) ||
+                       (yearFilter.y2027 && property.yearBuilt === 2027);
+      if (!yearMatch) {
+        return false;
+      }
+      
+      // Фильтр по максимальной цене
+      if (maxPrice) {
+        const maxPriceNum = parseInt(maxPrice.replace(/\s/g, ''));
+        if (property.pricePerSqm > maxPriceNum) {
+          return false;
+        }
+      }
+      
+      // Фильтр по поисковому запросу
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const searchableText = `${property.title} ${property.developer} ${property.location}`.toLowerCase();
+        if (!searchableText.includes(query)) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [selectedRegion, selectedCity, selectedExtra, propertyType, yearFilter, maxPrice, searchQuery]);
 
   return (
     <>
@@ -471,9 +583,19 @@ const SearchPage = () => {
                   </Select>
                   <Select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
                     <option value="">Выберите город</option>
-                    <option value="krasnodar">Краснодар</option>
-                    <option value="sochi">Сочи</option>
-                    <option value="anapa">Анапа</option>
+                    {selectedRegion === 'krasnodar' && (
+                      <>
+                        <option value="krasnodar">Краснодар</option>
+                        <option value="sochi">Сочи</option>
+                        <option value="anapa">Анапа</option>
+                      </>
+                    )}
+                    {selectedRegion === 'moscow' && (
+                      <option value="moscow">Москва</option>
+                    )}
+                    {selectedRegion === 'spb' && (
+                      <option value="spb">Санкт-Петербург</option>
+                    )}
                   </Select>
                   <Select value={selectedExtra} onChange={(e) => setSelectedExtra(e.target.value)}>
                     <option value="">Выберите ещё</option>
@@ -494,8 +616,28 @@ const SearchPage = () => {
                 </SearchInputContainer>
               </div>
 
-              <ResultsGrid>
-                {properties.map(property => (
+              <div style={{
+                marginBottom: '20px',
+                fontSize: '16px',
+                color: '#666',
+                fontFamily: 'Acrom, Arial, sans-serif'
+              }}>
+                Найдено результатов: {filteredProperties.length}
+              </div>
+
+              {filteredProperties.length === 0 ? (
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: '60px 20px',
+                  fontSize: '18px',
+                  color: '#666',
+                  fontFamily: 'Acrom, Arial, sans-serif'
+                }}>
+                  По вашим критериям ничего не найдено. Попробуйте изменить фильтры.
+                </div>
+              ) : (
+                <ResultsGrid>
+                  {filteredProperties.map(property => (
                   <PropertyCard key={property.id}>
                     <PropertyImageContainer>
                       <PropertyImage backgroundImage={property.image} />
@@ -520,7 +662,8 @@ const SearchPage = () => {
                     </PropertyInfo>
                   </PropertyCard>
                 ))}
-              </ResultsGrid>
+                </ResultsGrid>
+              )}
             </MainContent>
           </SearchContainer>
         </Content>

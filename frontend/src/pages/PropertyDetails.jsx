@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import GlobalStyle from '../components/GlobalStyle';
 import Header from '../components/Header';
@@ -424,13 +425,13 @@ const RoomsButtons = styled.div`
 `;
 
 const RoomButton = styled.button`
-  background: #f5f5f5;
+  background: ${props => props.active ? '#5a7c85' : '#f5f5f5'};
   border: none;
   border-radius: 20px;
   padding: 8px 16px;
   font-size: 14px;
   font-family: 'Acrom', Arial, sans-serif;
-  color: #666;
+  color: ${props => props.active ? '#fff' : '#666'};
   cursor: pointer;
   transition: all 0.2s;
   
@@ -528,35 +529,103 @@ const ApartmentButton = styled.button`
   }
 `;
 
-// Данные о квартирах в ЖК
-const apartmentsList = [
+// Расширенные данные о квартирах в ЖК с полной информацией для фильтрации
+const allApartmentsList = [
   {
-    title: '2-к. квартира',
-    price: '15.000.000 ₽',
+    id: 1,
+    title: '1-к. квартира',
+    price: '8.500.000 ₽',
+    priceNum: 8500000,
     complex: 'ЖК "Новостройки"',
     location: 'г. Краснодар',
-    planImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center'
+    planImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center',
+    rooms: 1,
+    area: 42,
+    floor: 3,
+    yearBuilt: 2025,
+    type: 'Квартира',
+    finishing: 'Без отделки',
+    floorRange: '1-5'
   },
   {
+    id: 2,
     title: '2-к. квартира',
     price: '15.000.000 ₽',
+    priceNum: 15000000,
     complex: 'ЖК "Новостройки"',
     location: 'г. Краснодар',
-    planImage: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&h=200&fit=crop&crop=center'
+    planImage: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&h=200&fit=crop&crop=center',
+    rooms: 2,
+    area: 68,
+    floor: 7,
+    yearBuilt: 2025,
+    type: 'Квартира',
+    finishing: 'Черновая',
+    floorRange: '6-10'
   },
   {
-    title: '2-к. квартира',
-    price: '15.000.000 ₽',
+    id: 3,
+    title: '3-к. квартира',
+    price: '22.000.000 ₽',
+    priceNum: 22000000,
     complex: 'ЖК "Новостройки"',
     location: 'г. Краснодар',
-    planImage: 'https://images.unsplash.com/photo-1560440021-33f9b867899d?w=300&h=200&fit=crop&crop=center'
+    planImage: 'https://images.unsplash.com/photo-1560440021-33f9b867899d?w=300&h=200&fit=crop&crop=center',
+    rooms: 3,
+    area: 89,
+    floor: 12,
+    yearBuilt: 2026,
+    type: 'Квартира',
+    finishing: 'Чистовая',
+    floorRange: '11+'
   },
   {
-    title: '2-к. квартира',
-    price: '15.000.000 ₽',
+    id: 4,
+    title: 'Студия',
+    price: '6.500.000 ₽',
+    priceNum: 6500000,
     complex: 'ЖК "Новостройки"',
     location: 'г. Краснодар',
-    planImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center'
+    planImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center',
+    rooms: 0,
+    area: 28,
+    floor: 2,
+    yearBuilt: 2024,
+    type: 'Студия',
+    finishing: 'Без отделки',
+    floorRange: '1-5'
+  },
+  {
+    id: 5,
+    title: '4-к. квартира',
+    price: '32.000.000 ₽',
+    priceNum: 32000000,
+    complex: 'ЖК "Новостройки"',
+    location: 'г. Краснодар',
+    planImage: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop&crop=center',
+    rooms: 4,
+    area: 115,
+    floor: 15,
+    yearBuilt: 2026,
+    type: 'Квартира',
+    finishing: 'Чистовая',
+    floorRange: '11+'
+  },
+  {
+    id: 6,
+    title: 'Пентхаус',
+    price: '45.000.000 ₽',
+    priceNum: 45000000,
+    complex: 'ЖК "Новостройки"',
+    location: 'г. Краснодар',
+    planImage: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop&crop=center',
+    rooms: 5,
+    area: 150,
+    floor: 20,
+    yearBuilt: 2025,
+    type: 'Пентхаус',
+    finishing: 'Чистовая',
+    floorRange: '11+'
   }
 ];
 
@@ -589,9 +658,86 @@ const PropertyDetails = () => {
   const navigate = useNavigate();
   const property = propertyData[id] || propertyData[1];
 
+  // Состояние для фильтров квартир
+  const [yearFilter, setYearFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [finishingFilter, setFinishingFilter] = useState('');
+  const [floorFilter, setFloorFilter] = useState('');
+  const [minArea, setMinArea] = useState('');
+  const [maxArea, setMaxArea] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [selectedRooms, setSelectedRooms] = useState(new Set());
+
   const handleBack = () => {
     navigate('/');
   };
+
+  const toggleRoom = (roomCount) => {
+    const newSelectedRooms = new Set(selectedRooms);
+    if (newSelectedRooms.has(roomCount)) {
+      newSelectedRooms.delete(roomCount);
+    } else {
+      newSelectedRooms.add(roomCount);
+    }
+    setSelectedRooms(newSelectedRooms);
+  };
+
+  // Фильтрация квартир
+  const filteredApartments = useMemo(() => {
+    return allApartmentsList.filter(apartment => {
+      // Фильтр по году сдачи
+      if (yearFilter && apartment.yearBuilt.toString() !== yearFilter) {
+        return false;
+      }
+      
+      // Фильтр по типу жилья
+      if (typeFilter && apartment.type !== typeFilter) {
+        return false;
+      }
+      
+      // Фильтр по типу отделки
+      if (finishingFilter && apartment.finishing !== finishingFilter) {
+        return false;
+      }
+      
+      // Фильтр по этажности
+      if (floorFilter && apartment.floorRange !== floorFilter) {
+        return false;
+      }
+      
+      // Фильтр по площади
+      if (minArea && apartment.area < parseInt(minArea)) {
+        return false;
+      }
+      if (maxArea && apartment.area > parseInt(maxArea)) {
+        return false;
+      }
+      
+      // Фильтр по цене
+      if (minPrice && apartment.priceNum < parseInt(minPrice.replace(/\s/g, ''))) {
+        return false;
+      }
+      if (maxPrice && apartment.priceNum > parseInt(maxPrice.replace(/\s/g, ''))) {
+        return false;
+      }
+      
+      // Фильтр по количеству комнат
+      if (selectedRooms.size > 0) {
+        const roomsToCheck = apartment.rooms === 0 ? 'studio' : apartment.rooms;
+        const hasMatch = Array.from(selectedRooms).some(selectedRoom => {
+          if (selectedRoom === 'studio' && apartment.rooms === 0) return true;
+          if (selectedRoom === '5+' && apartment.rooms >= 5) return true;
+          return selectedRoom === apartment.rooms;
+        });
+        if (!hasMatch) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [yearFilter, typeFilter, finishingFilter, floorFilter, minArea, maxArea, minPrice, maxPrice, selectedRooms]);
 
   return (
     <>
@@ -671,29 +817,29 @@ const PropertyDetails = () => {
           <ApartmentsTitle>Квартиры в этом ЖК</ApartmentsTitle>
           
           <FiltersRow>
-            <FilterSelect>
-              <option>Срок сдачи</option>
-              <option>2024</option>
-              <option>2025</option>
-              <option>2026</option>
+            <FilterSelect value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+              <option value="">Срок сдачи</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
             </FilterSelect>
-            <FilterSelect>
-              <option>Тип жилья</option>
-              <option>Квартира</option>
-              <option>Студия</option>
-              <option>Пентхаус</option>
+            <FilterSelect value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+              <option value="">Тип жилья</option>
+              <option value="Квартира">Квартира</option>
+              <option value="Студия">Студия</option>
+              <option value="Пентхаус">Пентхаус</option>
             </FilterSelect>
-            <FilterSelect>
-              <option>Тип отделки</option>
-              <option>Без отделки</option>
-              <option>Черновая</option>
-              <option>Чистовая</option>
+            <FilterSelect value={finishingFilter} onChange={(e) => setFinishingFilter(e.target.value)}>
+              <option value="">Тип отделки</option>
+              <option value="Без отделки">Без отделки</option>
+              <option value="Черновая">Черновая</option>
+              <option value="Чистовая">Чистовая</option>
             </FilterSelect>
-            <FilterSelect>
-              <option>Этаж</option>
-              <option>1-5</option>
-              <option>6-10</option>
-              <option>11+</option>
+            <FilterSelect value={floorFilter} onChange={(e) => setFloorFilter(e.target.value)}>
+              <option value="">Этаж</option>
+              <option value="1-5">1-5</option>
+              <option value="6-10">6-10</option>
+              <option value="11+">11+</option>
             </FilterSelect>
           </FiltersRow>
 
@@ -703,11 +849,19 @@ const PropertyDetails = () => {
               <RangeInputs>
                 <RangeInput>
                   <RangeLabel>От</RangeLabel>
-                  <RangeInputField placeholder="кв.м" />
+                  <RangeInputField 
+                    placeholder="кв.м" 
+                    value={minArea}
+                    onChange={(e) => setMinArea(e.target.value)}
+                  />
                 </RangeInput>
                 <RangeInput>
                   <RangeLabel>До</RangeLabel>
-                  <RangeInputField placeholder="кв.м" />
+                  <RangeInputField 
+                    placeholder="кв.м" 
+                    value={maxArea}
+                    onChange={(e) => setMaxArea(e.target.value)}
+                  />
                 </RangeInput>
               </RangeInputs>
             </RangeBlock>
@@ -717,11 +871,19 @@ const PropertyDetails = () => {
               <RangeInputs>
                 <RangeInput>
                   <RangeLabel>От</RangeLabel>
-                  <RangeInputField placeholder="руб" />
+                  <RangeInputField 
+                    placeholder="руб" 
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                  />
                 </RangeInput>
                 <RangeInput>
                   <RangeLabel>До</RangeLabel>
-                  <RangeInputField placeholder="руб" />
+                  <RangeInputField 
+                    placeholder="руб" 
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                  />
                 </RangeInput>
               </RangeInputs>
             </RangeBlock>
@@ -729,19 +891,71 @@ const PropertyDetails = () => {
             <RoomsBlock>
               <RoomsTitle>Комнаты</RoomsTitle>
               <RoomsButtons>
-                <RoomButton>Студия</RoomButton>
-                <RoomButton>1 к.</RoomButton>
-                <RoomButton>2 к.</RoomButton>
-                <RoomButton>3 к.</RoomButton>
-                <RoomButton>4 к.</RoomButton>
-                <RoomButton>5+ к.</RoomButton>
+                <RoomButton 
+                  active={selectedRooms.has('studio')}
+                  onClick={() => toggleRoom('studio')}
+                >
+                  Студия
+                </RoomButton>
+                <RoomButton 
+                  active={selectedRooms.has(1)}
+                  onClick={() => toggleRoom(1)}
+                >
+                  1 к.
+                </RoomButton>
+                <RoomButton 
+                  active={selectedRooms.has(2)}
+                  onClick={() => toggleRoom(2)}
+                >
+                  2 к.
+                </RoomButton>
+                <RoomButton 
+                  active={selectedRooms.has(3)}
+                  onClick={() => toggleRoom(3)}
+                >
+                  3 к.
+                </RoomButton>
+                <RoomButton 
+                  active={selectedRooms.has(4)}
+                  onClick={() => toggleRoom(4)}
+                >
+                  4 к.
+                </RoomButton>
+                <RoomButton 
+                  active={selectedRooms.has('5+')}
+                  onClick={() => toggleRoom('5+')}
+                >
+                  5+ к.
+                </RoomButton>
               </RoomsButtons>
             </RoomsBlock>
           </RangeFiltersRow>
 
+          <div style={{
+            marginBottom: '30px',
+            fontSize: '18px',
+            color: '#333',
+            fontFamily: 'Acrom, Arial, sans-serif',
+            textAlign: 'center'
+          }}>
+            Найдено квартир: {filteredApartments.length}
+          </div>
+
           <ApartmentsGrid>
-            {apartmentsList.map((apartment, index) => (
-              <ApartmentCard key={index}>
+            {filteredApartments.length === 0 ? (
+              <div style={{ 
+                gridColumn: '1 / -1',
+                textAlign: 'center', 
+                padding: '60px 20px',
+                fontSize: '18px',
+                color: '#666',
+                fontFamily: 'Acrom, Arial, sans-serif'
+              }}>
+                По выбранным критериям квартиры не найдены. Попробуйте изменить фильтры.
+              </div>
+            ) : (
+              filteredApartments.map((apartment) => (
+                <ApartmentCard key={apartment.id}>
                 <ApartmentPlan src={apartment.planImage} alt={`План ${apartment.title}`} />
                 <ApartmentInfo>
                   <ApartmentTitle>{apartment.title}</ApartmentTitle>
@@ -752,7 +966,8 @@ const PropertyDetails = () => {
                   <ApartmentButton>Подробнее</ApartmentButton>
                 </ApartmentInfo>
               </ApartmentCard>
-            ))}
+              ))
+            )}
           </ApartmentsGrid>
         </ApartmentsContainer>
       </ApartmentsSection>

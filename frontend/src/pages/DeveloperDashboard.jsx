@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import GlobalStyle from '../components/GlobalStyle';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ProjectStatistics from '../components/dashboard/ProjectStatistics';
 
 const Container = styled.div`
   background: #ffffff;
@@ -340,7 +341,153 @@ const LegendText = styled.span`
   color: #000000;
 `;
 
+const FiltersContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+`;
+
+const FilterSelect = styled.select`
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-family: 'Acrom', Arial, sans-serif;
+  color: #333;
+  cursor: pointer;
+  min-width: 180px;
+  appearance: none;
+  
+  &:focus {
+    outline: none;
+    border-color: #5a7c85;
+  }
+`;
+
+const FilterLabel = styled.span`
+  font-family: 'Acrom', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+`;
+
+const ResultsCount = styled.div`
+  font-family: 'Acrom', Arial, sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin-left: auto;
+  
+  @media (max-width: 768px) {
+    margin-left: 0;
+    text-align: center;
+  }
+`;
+
+// Данные проектов с расширенной информацией для фильтрации
+const allProjects = [
+  {
+    id: 1,
+    title: 'ЖК "Жилой комплекс"',
+    city: 'krasnodar',
+    cityName: 'г. Краснодар',
+    status: 'building',
+    statusName: 'Строится',
+    totalUnits: 25,
+    soldUnits: 10,
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=282&h=330&fit=crop&crop=center',
+    yearBuilt: 2025
+  },
+  {
+    id: 2,
+    title: 'ЖК "Лесные Террасы"',
+    city: 'krasnodar',
+    cityName: 'г. Краснодар',
+    status: 'completed',
+    statusName: 'Сдан',
+    totalUnits: 35,
+    soldUnits: 32,
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=282&h=330&fit=crop&crop=center',
+    yearBuilt: 2024
+  },
+  {
+    id: 3,
+    title: 'ЖК "Вектор Жизни"',
+    city: 'krasnodar',
+    cityName: 'г. Краснодар',
+    status: 'building',
+    statusName: 'Строится',
+    totalUnits: 28,
+    soldUnits: 15,
+    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=282&h=330&fit=crop&crop=center',
+    yearBuilt: 2025
+  },
+  {
+    id: 4,
+    title: 'ЖК "Атриум Сити"',
+    city: 'krasnodar',
+    cityName: 'г. Краснодар',
+    status: 'planning',
+    statusName: 'Планируется',
+    totalUnits: 40,
+    soldUnits: 5,
+    image: 'https://images.unsplash.com/photo-1560440021-33f9b867899d?w=282&h=330&fit=crop&crop=center',
+    yearBuilt: 2026
+  },
+  {
+    id: 5,
+    title: 'ЖК "Московские Высоты"',
+    city: 'moscow',
+    cityName: 'г. Москва',
+    status: 'building',
+    statusName: 'Строится',
+    totalUnits: 50,
+    soldUnits: 30,
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=282&h=330&fit=crop&crop=center',
+    yearBuilt: 2025
+  },
+  {
+    id: 6,
+    title: 'ЖК "Подмосковье"',
+    city: 'podolsk',
+    cityName: 'г. Подольск',
+    status: 'completed',
+    statusName: 'Сдан',
+    totalUnits: 22,
+    soldUnits: 22,
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=282&h=330&fit=crop&crop=center',
+    yearBuilt: 2023
+  }
+];
+
 const DeveloperDashboard = () => {
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+
+  // Фильтрация проектов
+  const filteredProjects = useMemo(() => {
+    return allProjects.filter(project => {
+      // Фильтр по городу
+      if (selectedCity && project.city !== selectedCity) {
+        return false;
+      }
+      
+      // Фильтр по статусу
+      if (selectedStatus && project.status !== selectedStatus) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [selectedCity, selectedStatus]);
+
   return (
     <>
       <GlobalStyle />
@@ -400,66 +547,44 @@ const DeveloperDashboard = () => {
           <ProjectsSection>
             <SectionTitle>Жилые комплексы от ООО "Фундамент Групп"</SectionTitle>
             
+            <FiltersContainer>
+              <FilterLabel>Фильтры:</FilterLabel>
+              <FilterSelect value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
+                <option value="">Все города</option>
+                <option value="krasnodar">Краснодар</option>
+                <option value="moscow">Москва</option>
+                <option value="podolsk">Подольск</option>
+              </FilterSelect>
+              <FilterSelect value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+                <option value="">Все статусы</option>
+                <option value="completed">Сдан</option>
+                <option value="building">Строится</option>
+                <option value="planning">Планируется</option>
+              </FilterSelect>
+              <ResultsCount>
+                Найдено проектов: {filteredProjects.length}
+              </ResultsCount>
+            </FiltersContainer>
+            
             <ProjectsGrid>
-              <ProjectCard>
-                <ProjectImage backgroundImage="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=282&h=330&fit=crop&crop=center" />
-                <ProjectInfo>
-                  <ProjectHeader>
-                    <ProjectTitle>ЖК "Жилой комплекс"</ProjectTitle>
-                    <ProjectLocation>г. Краснодар</ProjectLocation>
-                    <ProjectStats>
-                      <StatItem>Всего: более 20 объектов</StatItem>
-                      <StatItem>Сдано: 10 объектов</StatItem>
-                    </ProjectStats>
-                  </ProjectHeader>
-                  <EditButton>Редактировать</EditButton>
-                </ProjectInfo>
-              </ProjectCard>
-              
-              <ProjectCard>
-                <ProjectImage backgroundImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=282&h=330&fit=crop&crop=center" />
-                <ProjectInfo>
-                  <ProjectHeader>
-                    <ProjectTitle>ЖК "Лесные Террасы"</ProjectTitle>
-                    <ProjectLocation>г. Краснодар</ProjectLocation>
-                    <ProjectStats>
-                      <StatItem>Всего: более 20 объектов</StatItem>
-                      <StatItem>Сдано: 10 объектов</StatItem>
-                    </ProjectStats>
-                  </ProjectHeader>
-                  <EditButton>Редактировать</EditButton>
-                </ProjectInfo>
-              </ProjectCard>
-              
-              <ProjectCard>
-                <ProjectImage backgroundImage="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=282&h=330&fit=crop&crop=center" />
-                <ProjectInfo>
-                  <ProjectHeader>
-                    <ProjectTitle>ЖК "Вектор Жизни"</ProjectTitle>
-                    <ProjectLocation>г. Краснодар</ProjectLocation>
-                    <ProjectStats>
-                      <StatItem>Всего: более 20 объектов</StatItem>
-                      <StatItem>Сдано: 10 объектов</StatItem>
-                    </ProjectStats>
-                  </ProjectHeader>
-                  <EditButton>Редактировать</EditButton>
-                </ProjectInfo>
-              </ProjectCard>
-              
-              <ProjectCard>
-                <ProjectImage backgroundImage="https://images.unsplash.com/photo-1560440021-33f9b867899d?w=282&h=330&fit=crop&crop=center" />
-                <ProjectInfo>
-                  <ProjectHeader>
-                    <ProjectTitle>ЖК "Атриум Сити"</ProjectTitle>
-                    <ProjectLocation>г. Краснодар</ProjectLocation>
-                    <ProjectStats>
-                      <StatItem>Всего: более 20 объектов</StatItem>
-                      <StatItem>Сдано: 10 объектов</StatItem>
-                    </ProjectStats>
-                  </ProjectHeader>
-                  <EditButton>Редактировать</EditButton>
-                </ProjectInfo>
-              </ProjectCard>
+              {filteredProjects.map((project) => (
+                <ProjectCard key={project.id}>
+                  <ProjectImage backgroundImage={project.image} />
+                  <ProjectInfo>
+                    <ProjectHeader>
+                      <ProjectTitle>{project.title}</ProjectTitle>
+                      <ProjectLocation>{project.cityName}</ProjectLocation>
+                      <ProjectStats>
+                        <StatItem>Всего: {project.totalUnits} объектов</StatItem>
+                        <StatItem>Продано: {project.soldUnits} объектов</StatItem>
+                        <StatItem>Статус: {project.statusName}</StatItem>
+                        <StatItem>Год сдачи: {project.yearBuilt}</StatItem>
+                      </ProjectStats>
+                    </ProjectHeader>
+                    <EditButton>Редактировать</EditButton>
+                  </ProjectInfo>
+                </ProjectCard>
+              ))}
             </ProjectsGrid>
           </ProjectsSection>
           
@@ -496,38 +621,38 @@ const DeveloperDashboard = () => {
               <ChartContainer>
                 <PieChartContainer>
                   <PieChart viewBox="0 0 400 400">
-                    {/* Студии - серый */}
+                    {/* 4-к квартиры - бордовый (самый большой сегмент 775) */}
                     <path
-                      d="M 200,200 L 200,50 A 150,150 0 0,1 292.43,92.43 Z"
-                      fill="#E0E0E0"
-                    />
-                    {/* 1-к квартиры - светло-серый */}
-                    <path
-                      d="M 200,200 L 292.43,92.43 A 150,150 0 0,1 350,200 Z"
-                      fill="#D0D0D0"
-                    />
-                    {/* 2-к квартиры - голубой */}
-                    <path
-                      d="M 200,200 L 350,200 A 150,150 0 1,1 107.57,292.43 Z"
-                      fill="#4A90A4"
-                    />
-                    {/* 3-к квартиры - бордовый */}
-                    <path
-                      d="M 200,200 L 107.57,292.43 A 150,150 0 0,1 107.57,107.57 Z"
+                      d="M 200,200 L 200,50 A 150,150 0 1,1 107,315 Z"
                       fill="#8B1538"
                     />
-                    {/* 4-к квартиры - темно-синий */}
+                    {/* 3-к квартиры - голубой (569) */}
                     <path
-                      d="M 200,200 L 107.57,107.57 A 150,150 0 0,1 200,50 Z"
+                      d="M 200,200 L 107,315 A 150,150 0 0,1 345,160 Z"
+                      fill="#4A90A4"
+                    />
+                    {/* 2-к квартиры - темно-синий (473) */}
+                    <path
+                      d="M 200,200 L 345,160 A 150,150 0 0,1 293,310 Z"
                       fill="#2C3E50"
+                    />
+                    {/* 1-к квартиры - светло-серый (187) */}
+                    <path
+                      d="M 200,200 L 293,310 A 150,150 0 0,1 175,345 Z"
+                      fill="#D0D0D0"
+                    />
+                    {/* Студии - серый (194) */}
+                    <path
+                      d="M 200,200 L 175,345 A 150,150 0 0,1 200,50 Z"
+                      fill="#E0E0E0"
                     />
                   </PieChart>
                   
-                  <ChartLabel style={{ top: '20px', right: '60px' }}>473</ChartLabel>
-                  <ChartLabel style={{ top: '80px', right: '20px' }}>187</ChartLabel>
-                  <ChartLabel style={{ bottom: '60px', right: '20px' }}>569</ChartLabel>
-                  <ChartLabel style={{ bottom: '20px', left: '60px' }}>775</ChartLabel>
-                  <ChartLabel style={{ top: '60px', left: '20px' }}>194</ChartLabel>
+                  <ChartLabel style={{ top: '30%', left: '30%' }}>775</ChartLabel>
+                  <ChartLabel style={{ top: '70%', left: '15%' }}>569</ChartLabel>
+                  <ChartLabel style={{ top: '50%', right: '20%' }}>473</ChartLabel>
+                  <ChartLabel style={{ bottom: '15%', left: '45%' }}>187</ChartLabel>
+                  <ChartLabel style={{ bottom: '25%', right: '40%' }}>194</ChartLabel>
                 </PieChartContainer>
                 
                 <Legend>
@@ -540,21 +665,23 @@ const DeveloperDashboard = () => {
                     <LegendText>1-к. квартиры</LegendText>
                   </LegendItem>
                   <LegendItem>
-                    <LegendColor color="#4A90A4" />
+                    <LegendColor color="#2C3E50" />
                     <LegendText>2-к. квартиры</LegendText>
                   </LegendItem>
                   <LegendItem>
-                    <LegendColor color="#8B1538" />
+                    <LegendColor color="#4A90A4" />
                     <LegendText>3-к. квартиры</LegendText>
                   </LegendItem>
                   <LegendItem>
-                    <LegendColor color="#2C3E50" />
+                    <LegendColor color="#8B1538" />
                     <LegendText>4-к. квартиры</LegendText>
                   </LegendItem>
                 </Legend>
               </ChartContainer>
             </StatisticsContainer>
           </StatisticsSection>
+          
+          <ProjectStatistics />
         </Content>
       </Container>
       <Footer />

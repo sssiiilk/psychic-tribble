@@ -1,5 +1,7 @@
 import styled from 'styled-components';
+import { useState, useEffect } from 'react';
 import OffersCarousel from './OffersCarousel';
+import LeafletMap from './LeafletMap';
 
 const Wrapper = styled.section`
   width: 80vw;
@@ -95,47 +97,125 @@ const SearchButton = styled.button`
   }
 `;
 
-const MapImg = styled.img`
+const MapSection = styled.div`
   width: 100%;
-  border-radius: 32px;
-  margin-top: 0;
-  object-fit: cover;
+  margin: 32px 0;
 
   @media (max-width: 600px) {
-    border-radius: 16px;
-    height: 390px;
-    max-height: 400px;
-    object-fit: cover;
+    margin: 16px 0;
   }
 `;
 
-const PopularOffers = () => (
-  <Wrapper>
-    <Title>Посмотрите популярные предложения</Title>
-    <SearchRow>
-      <Select defaultValue="">
-        <option value="" disabled>Выберите регион</option>
-        <option>Ростовская область</option>
-        <option>Краснодарский край</option>
-        <option>Ставропольский край</option>
-        <option>Астраханская область</option>
-        <option>Волгоградская область</option>
-        
-      </Select>
-      <Select defaultValue="">
-        <option value="" disabled>Выберите город</option>
-        <option>Ростов-на-Дону</option>
-      </Select>
-      <Select defaultValue="">
-        <option value="" disabled>Выберите район</option>
-        <option>Центральный</option>
-        <option>Ленинский</option>
-      </Select>
-      <SearchButton>Искать</SearchButton>
-    </SearchRow>
-    <MapImg src="" alt="Карта города" />
-    <OffersCarousel />
-  </Wrapper>
-);
+const MapTitle = styled.h3`
+  font-size: 24px;
+  font-family: 'Acrom', Arial, sans-serif;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 16px 0;
+  text-align: center;
+
+  @media (max-width: 600px) {
+    font-size: 20px;
+    margin: 0 0 12px 0;
+  }
+`;
+
+const MapDescription = styled.p`
+  font-size: 16px;
+  font-family: 'Acrom', Arial, sans-serif;
+  color: #666;
+  text-align: center;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+
+  @media (max-width: 600px) {
+    font-size: 14px;
+    margin: 0 0 16px 0;
+  }
+`;
+
+const PopularOffers = () => {
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+
+  // Очищаем выбранный город при смене региона
+  useEffect(() => {
+    setSelectedCity('');
+  }, [selectedRegion]);
+
+  // Данные городов для каждого региона
+  const cityOptions = {
+    'krasnodar': [
+      { value: 'krasnodar', label: 'Краснодар' },
+      { value: 'sochi', label: 'Сочи' },
+      { value: 'novorossiysk', label: 'Новороссийск' }
+    ],
+    'moscow': [
+      { value: 'moscow', label: 'Москва' },
+      { value: 'podolsk', label: 'Подольск' },
+      { value: 'khimki', label: 'Химки' }
+    ],
+    'spb': [
+      { value: 'spb', label: 'Санкт-Петербург' },
+      { value: 'pushkin', label: 'Пушкин' },
+      { value: 'kolpino', label: 'Колпино' }
+    ],
+    'rostov': [
+      { value: 'rostov', label: 'Ростов-на-Дону' },
+      { value: 'taganrog', label: 'Таганрог' }
+    ],
+    'stavropol': [
+      { value: 'stavropol', label: 'Ставрополь' },
+      { value: 'pyatigorsk', label: 'Пятигорск' }
+    ],
+    'astrakhan': [
+      { value: 'astrakhan', label: 'Астрахань' }
+    ],
+    'volgograd': [
+      { value: 'volgograd', label: 'Волгоград' }
+    ]
+  };
+
+  const handleSearch = () => {
+    // Можно добавить дополнительную логику поиска
+    console.log('Поиск по региону:', selectedRegion, 'и городу:', selectedCity);
+  };
+
+  return (
+    <Wrapper>
+      <Title>Посмотрите популярные предложения</Title>
+      <SearchRow>
+        <Select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)}>
+          <option value="" disabled>Выберите регион</option>
+          <option value="rostov">Ростовская область</option>
+          <option value="krasnodar">Краснодарский край</option>
+          <option value="stavropol">Ставропольский край</option>
+          <option value="astrakhan">Астраханская область</option>
+          <option value="volgograd">Волгоградская область</option>
+          <option value="moscow">Московская область</option>
+          <option value="spb">Ленинградская область</option>
+        </Select>
+        <Select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}>
+          <option value="" disabled>Выберите город</option>
+          {selectedRegion && cityOptions[selectedRegion] && 
+            cityOptions[selectedRegion].map(city => (
+              <option key={city.value} value={city.value}>{city.label}</option>
+            ))
+          }
+        </Select>
+        <SearchButton onClick={handleSearch}>Искать</SearchButton>
+      </SearchRow>
+      <MapSection>
+        <MapTitle>Карта жилых комплексов Краснодара</MapTitle>
+        <MapDescription>
+          Нажмите на маркер для получения подробной информации о ЖК. 
+          Зеленые маркеры — сданные объекты, синие — строящиеся, серые — планируемые.
+        </MapDescription>
+        <LeafletMap />
+      </MapSection>
+      <OffersCarousel selectedRegion={selectedRegion} selectedCity={selectedCity} />
+    </Wrapper>
+  );
+};
 
 export default PopularOffers; 

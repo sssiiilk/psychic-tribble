@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import GlobalStyle from '../components/GlobalStyle';
 import Header from '../components/Header';
@@ -354,33 +354,110 @@ const ActionButton = styled.button`
   }
 `;
 
+// Расширенные данные избранных объектов с полной информацией для фильтрации
+const allFavoriteProperties = [
+  {
+    id: 1,
+    title: '2-к. квартира',
+    price: '15.000.000 ₽',
+    developer: 'GROUP',
+    complex: 'ЖК "Новостройки"',
+    complexCode: 'novostroyki',
+    location: 'г. Краснодар',
+    city: 'krasnodar',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center',
+    isBooked: true,
+    yearBuilt: 2025,
+    features: ['Детская площадка', 'Паркинг']
+  },
+  {
+    id: 2,
+    title: '1-к. квартира',
+    price: '7.000.000 ₽',
+    developer: 'ЗАСТРОЙЩИК',
+    complex: 'ЖК "Лесные террасы"',
+    complexCode: 'forest',
+    location: 'г. Краснодар',
+    city: 'krasnodar',
+    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&h=200&fit=crop&crop=center',
+    isBooked: true,
+    yearBuilt: 2026,
+    features: ['Лес рядом', 'Тихий район']
+  },
+  {
+    id: 3,
+    title: '3-к. квартира',
+    price: '22.000.000 ₽',
+    developer: 'ПРЕМИУМ СТРОЙ',
+    complex: 'ЖК "Вектор Жизни"',
+    complexCode: 'vector',
+    location: 'г. Краснодар',
+    city: 'krasnodar',
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop&crop=center',
+    isBooked: false,
+    yearBuilt: 2025,
+    features: ['Премиум класс', 'Консьерж']
+  },
+  {
+    id: 4,
+    title: '2-к. квартира',
+    price: '35.000.000 ₽',
+    developer: 'МОСКВА СТРОЙ',
+    complex: 'ЖК "Московские Высоты"',
+    complexCode: 'moscow_heights',
+    location: 'г. Москва',
+    city: 'moscow',
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&h=200&fit=crop&crop=center',
+    isBooked: false,
+    yearBuilt: 2025,
+    features: ['Центр города', 'Панорамные окна']
+  },
+  {
+    id: 5,
+    title: '1-к. квартира',
+    price: '12.000.000 ₽',
+    developer: 'СПБ ДЕВЕЛОПМЕНТ',
+    complex: 'ЖК "Северная Столица"',
+    complexCode: 'north_capital',
+    location: 'г. Санкт-Петербург',
+    city: 'spb',
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop&crop=center',
+    isBooked: false,
+    yearBuilt: 2026,
+    features: ['Исторический центр', 'Высокие потолки']
+  }
+];
+
 const UserProfile = () => {
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedComplex, setSelectedComplex] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const favoriteProperties = [
-    {
-      id: 1,
-      title: '2-к. квартира',
-      price: '15.000.000 ₽',
-      developer: 'GROUP',
-      complex: 'ЖК "Новостройки"',
-      location: 'г. Краснодар',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center',
-      isBooked: true
-    },
-    {
-      id: 2,
-      title: '1-к. квартира',
-      price: '7.000.000 ₽',
-      developer: 'ЗАСТРОЙЩИК',
-      complex: 'ЖК "Лесные террасы"',
-      location: 'г. Краснодар',
-      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&h=200&fit=crop&crop=center',
-      isBooked: true
-    }
-  ];
+  // Фильтрация избранных объектов
+  const filteredFavorites = useMemo(() => {
+    return allFavoriteProperties.filter(property => {
+      // Фильтр по городу
+      if (selectedCity && property.city !== selectedCity) {
+        return false;
+      }
+      
+      // Фильтр по ЖК
+      if (selectedComplex && property.complexCode !== selectedComplex) {
+        return false;
+      }
+      
+      // Фильтр по поисковому запросу
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const searchableText = `${property.title} ${property.complex} ${property.developer} ${property.location}`.toLowerCase();
+        if (!searchableText.includes(query)) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [selectedCity, selectedComplex, searchQuery]);
 
   return (
     <>
@@ -447,6 +524,8 @@ const UserProfile = () => {
                 <option value="novostroyki">ЖК "Новостройки"</option>
                 <option value="forest">ЖК "Лесные террасы"</option>
                 <option value="vector">ЖК "Вектор Жизни"</option>
+                <option value="moscow_heights">ЖК "Московские Высоты"</option>
+                <option value="north_capital">ЖК "Северная Столица"</option>
               </Select>
               
               <SearchContainer>
@@ -460,8 +539,31 @@ const UserProfile = () => {
               </SearchContainer>
             </FiltersRow>
 
+            <div style={{
+              marginBottom: '20px',
+              fontSize: '16px',
+              color: '#666',
+              fontFamily: 'Acrom, Arial, sans-serif'
+            }}>
+              Найдено в избранном: {filteredFavorites.length}
+            </div>
+
             <FavoritesGrid>
-              {favoriteProperties.map(property => (
+              {filteredFavorites.length === 0 ? (
+                <div style={{ 
+                  gridColumn: '1 / -1',
+                  textAlign: 'center', 
+                  padding: '60px 20px',
+                  fontSize: '18px',
+                  color: '#666',
+                  fontFamily: 'Acrom, Arial, sans-serif'
+                }}>
+                  {selectedCity || selectedComplex || searchQuery 
+                    ? 'По выбранным критериям ничего не найдено' 
+                    : 'Добавьте объекты в избранное'}
+                </div>
+              ) : (
+                filteredFavorites.map(property => (
                 <FavoriteCard key={property.id}>
                   {property.isBooked && <BookedBadge>Вы забронировали</BookedBadge>}
                   <CardImage src={property.image} alt={property.title} />
@@ -477,7 +579,8 @@ const UserProfile = () => {
                     </CardActions>
                   </CardContent>
                 </FavoriteCard>
-              ))}
+                ))
+              )}
             </FavoritesGrid>
           </FavoritesSection>
         </Content>
