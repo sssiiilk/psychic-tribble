@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { apiRequest, API_ENDPOINTS } from '../../../config/api';
 
 const ChartContainer = styled.div`
   background: #fff;
@@ -169,9 +170,80 @@ const LegendColor = styled.div`
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 `;
 
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #666;
+`;
+
 const ProjectStatistics = () => {
   const [selectedProject, setSelectedProject] = useState('Выберите ЖК');
   const [activeFilter, setActiveFilter] = useState('Проданы');
+  const [complexes, setComplexes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchComplexes = async () => {
+      try {
+        setLoading(true);
+        const response = await apiRequest(API_ENDPOINTS.COMPLEXES);
+        
+        if (response.success) {
+          setComplexes(response.data);
+          if (response.data.length > 0) {
+            setSelectedProject(response.data[0].name);
+          }
+        } else {
+          setError('Ошибка получения данных');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComplexes();
+  }, []);
+
+  // Генерируем статистику на основе данных комплексов
+  const generateStatistics = () => {
+    if (!complexes.length) return [];
+    
+    const colors = ['#5a7c85', '#7cb83d', '#8b7355', '#40a0a0', '#c0c0c0'];
+    const maxValue = 1000;
+    
+    return complexes.slice(0, 4).map((complex, index) => ({
+      value: Math.floor(Math.random() * maxValue) + 100,
+      label: (index + 1).toString(),
+      color: colors[index % colors.length],
+      name: complex.name
+    }));
+  };
+
+  const statistics = generateStatistics();
+
+  if (loading) {
+    return (
+      <ChartContainer>
+        <ChartTitle>Статистика отдельного ЖК</ChartTitle>
+        <LoadingMessage>Загрузка данных...</LoadingMessage>
+      </ChartContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <ChartContainer>
+        <ChartTitle>Статистика отдельного ЖК</ChartTitle>
+        <div style={{ color: '#e74c3c', textAlign: 'center', padding: '20px' }}>
+          Ошибка: {error}
+        </div>
+      </ChartContainer>
+    );
+  }
 
   return (
     <ChartContainer>
@@ -182,11 +254,11 @@ const ProjectStatistics = () => {
           value={selectedProject} 
           onChange={(e) => setSelectedProject(e.target.value)}
         >
-          <option>Выберите ЖК</option>
-          <option>ЖК "Жилой комплекс"</option>
-          <option>ЖК "Лесные Террасы"</option>
-          <option>ЖК "Вектор Жизни"</option>
-          <option>ЖК "Атриум Сити"</option>
+          {complexes.map((complex) => (
+            <option key={complex.id} value={complex.name}>
+              {complex.name}
+            </option>
+          ))}
         </Select>
       </SelectContainer>
 
@@ -212,22 +284,14 @@ const ProjectStatistics = () => {
             <div>0</div>
           </YAxisLabels>
           <BarChart>
-            <BarContainer>
-              <Bar height={70} color="#5a7c85" />
-              <BarLabel>1</BarLabel>
-            </BarContainer>
-            <BarContainer>
-              <Bar height={90} color="#7cb83d" />
-              <BarLabel>2</BarLabel>
-            </BarContainer>
-            <BarContainer>
-              <Bar height={75} color="#8b7355" />
-              <BarLabel>3</BarLabel>
-            </BarContainer>
-            <BarContainer>
-              <Bar height={15} color="#40a0a0" />
-              <BarLabel>4</BarLabel>
-            </BarContainer>
+            {statistics.map((stat, index) => (
+              <BarContainer key={index}>
+                <Bar height={(stat.value / 1000) * 100} color={stat.color}>
+                  {stat.value}
+                </Bar>
+                <BarLabel>{stat.label}</BarLabel>
+              </BarContainer>
+            ))}
           </BarChart>
         </ChartWrapper>
 

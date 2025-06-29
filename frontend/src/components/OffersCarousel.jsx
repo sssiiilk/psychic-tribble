@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import OfferCard from './OfferCard';
 import kvImage from '../assets/kv.png';
+import { apiRequest, API_ENDPOINTS } from '../../config/api';
 
 const CarouselWrapper = styled.div`
   width: 80vw;
@@ -35,134 +36,67 @@ const NoResultsMessage = styled.div`
   padding: 40px 20px;
 `;
 
-// Расширенные данные предложений с полной информацией для фильтрации
-const allOffers = [
-  {
-    id: 1,
-    img: kvImage,
-    title: '2-к. квартира',
-    price: '15.000.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Новостройки"',
-    city: 'г. Краснодар',
-    region: 'krasnodar',
-    cityCode: 'krasnodar',
-    popular: true,
-    yearBuilt: 2025,
-    pricePerSqm: 120000,
-    features: ['Парковка', 'Детская площадка']
-  },
-  {
-    id: 2,
-    img: kvImage,
-    title: '1-к. квартира',
-    price: '8.500.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Лесные Террасы"',
-    city: 'г. Краснодар',
-    region: 'krasnodar',
-    cityCode: 'krasnodar',
-    popular: false,
-    yearBuilt: 2026,
-    pricePerSqm: 110000,
-    features: ['Фитнес-центр', 'Консьерж']
-  },
-  {
-    id: 3,
-    img: kvImage,
-    title: '3-к. квартира',
-    price: '22.000.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Морской Бриз"',
-    city: 'г. Сочи',
-    region: 'krasnodar',
-    cityCode: 'sochi',
-    popular: true,
-    yearBuilt: 2025,
-    pricePerSqm: 150000,
-    features: ['Бассейн', 'Спа-центр']
-  },
-  {
-    id: 4,
-    img: kvImage,
-    title: '2-к. квартира',
-    price: '18.000.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Центральный"',
-    city: 'г. Ростов-на-Дону',
-    region: 'rostov',
-    cityCode: 'rostov',
-    popular: false,
-    yearBuilt: 2026,
-    pricePerSqm: 130000,
-    features: ['Подземная парковка', 'Охрана']
-  },
-  {
-    id: 5,
-    img: kvImage,
-    title: '4-к. квартира',
-    price: '35.000.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Премиум Класс"',
-    city: 'г. Москва',
-    region: 'moscow',
-    cityCode: 'moscow',
-    popular: true,
-    yearBuilt: 2027,
-    pricePerSqm: 200000,
-    features: ['Консьерж', 'Панорамные окна']
-  },
-  {
-    id: 6,
-    img: kvImage,
-    title: '1-к. квартира',
-    price: '12.000.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Северная Столица"',
-    city: 'г. Санкт-Петербург',
-    region: 'spb',
-    cityCode: 'spb',
-    popular: false,
-    yearBuilt: 2025,
-    pricePerSqm: 140000,
-    features: ['Историческое здание', 'Высокие потолки']
-  },
-  {
-    id: 7,
-    img: kvImage,
-    title: '2-к. квартира',
-    price: '13.500.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Южный Берег"',
-    city: 'г. Ставрополь',
-    region: 'stavropol',
-    cityCode: 'stavropol',
-    popular: false,
-    yearBuilt: 2026,
-    pricePerSqm: 115000,
-    features: ['Зеленая зона', 'Детский сад']
-  },
-  {
-    id: 8,
-    img: kvImage,
-    title: '3-к. квартира',
-    price: '16.800.000 Р',
-    group: 'GROUP',
-    desc: 'ЖК "Астраханский"',
-    city: 'г. Астрахань',
-    region: 'astrakhan',
-    cityCode: 'astrakhan',
-    popular: false,
-    yearBuilt: 2025,
-    pricePerSqm: 105000,
-    features: ['Близко к морю', 'Тихий район']
-  }
-];
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+`;
+
+const ErrorMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #e74c3c;
+`;
 
 const OffersCarousel = ({ selectedRegion, selectedCity }) => {
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        setLoading(true);
+        const response = await apiRequest(API_ENDPOINTS.COMPLEXES);
+        
+        if (response.success) {
+          // Преобразуем данные комплексов в формат для карточек
+          const transformedOffers = response.data.slice(0, 8).map((complex, index) => ({
+            id: complex.id,
+            img: kvImage, // Используем локальное изображение
+            title: `${Math.floor(Math.random() * 3) + 1}-к. квартира`, // Случайное количество комнат
+            price: complex.price,
+            group: complex.developer,
+            desc: complex.name,
+            city: complex.address,
+            region: 'krasnodar', // По умолчанию Краснодарский край
+            cityCode: 'krasnodar',
+            popular: index < 3, // Первые 3 предложения помечаем как популярные
+            yearBuilt: complex.yearBuilt,
+            pricePerSqm: Math.floor(Math.random() * 100000) + 80000,
+            features: ['Парковка', 'Детская площадка'],
+            status: complex.status
+          }));
+          
+          setOffers(transformedOffers);
+        } else {
+          setError('Ошибка получения данных');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, []);
+
   // Фильтрация предложений на основе выбранных фильтров
   const filteredOffers = useMemo(() => {
-    return allOffers.filter(offer => {
+    return offers.filter(offer => {
       // Фильтр по региону
       if (selectedRegion && offer.region !== selectedRegion) {
         return false;
@@ -175,7 +109,23 @@ const OffersCarousel = ({ selectedRegion, selectedCity }) => {
       
       return true;
     });
-  }, [selectedRegion, selectedCity]);
+  }, [offers, selectedRegion, selectedCity]);
+
+  if (loading) {
+    return (
+      <CarouselWrapper>
+        <LoadingMessage>Загрузка предложений...</LoadingMessage>
+      </CarouselWrapper>
+    );
+  }
+
+  if (error) {
+    return (
+      <CarouselWrapper>
+        <ErrorMessage>Ошибка: {error}</ErrorMessage>
+      </CarouselWrapper>
+    );
+  }
 
   // Если нет подходящих предложений
   if (filteredOffers.length === 0) {

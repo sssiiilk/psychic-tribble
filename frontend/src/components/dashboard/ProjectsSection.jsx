@@ -1,5 +1,7 @@
 import styled from 'styled-components';
+import { useState, useEffect } from 'react';
 import ProjectCard from './ProjectCard';
+import { apiRequest, API_ENDPOINTS } from '../../../config/api';
 
 const SectionTitle = styled.h2`
   font-size: 2rem;
@@ -21,46 +23,87 @@ const ProjectsGrid = styled.div`
   }
 `;
 
-const projects = [
-  {
-    title: 'ЖК "Жилой комплекс"',
-    developer: 'ООО "Застройщик"',
-    location: 'г. Краснодар',
-    totalUnits: 'более 20 объектов',
-    availableUnits: 'Сдано 10 объектов'
-  },
-  {
-    title: 'ЖК "Лесные Террасы"',
-    developer: 'ООО "Застройщик"',
-    location: 'г. Краснодар',
-    totalUnits: 'более 20 объектов',
-    availableUnits: 'Сдано 10 объектов'
-  },
-  {
-    title: 'ЖК "Вектор Жизни"',
-    developer: 'ООО "Застройщик"',
-    location: 'г. Краснодар',
-    totalUnits: 'более 20 объектов',
-    availableUnits: 'Сдано 10 объектов'
-  },
-  {
-    title: 'ЖК "Атриум Сити"',
-    developer: 'ООО "Застройщик"',
-    location: 'г. Краснодар',
-    totalUnits: 'более 20 объектов',
-    availableUnits: 'Сдано 10 объектов'
-  }
-];
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+`;
 
-const ProjectsSection = ({ developerName }) => (
-  <>
-    <SectionTitle>Жилые комплексы от ООО "{developerName || 'Фундамент Групп'}"</SectionTitle>
-    <ProjectsGrid>
-      {projects.map((project, index) => (
-        <ProjectCard key={index} project={project} />
-      ))}
-    </ProjectsGrid>
-  </>
-);
+const ErrorMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #e74c3c;
+`;
+
+const ProjectsSection = ({ developerName }) => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await apiRequest(API_ENDPOINTS.COMPLEXES);
+        
+        if (response.success) {
+          // Преобразуем данные комплексов в формат для проектов
+          const transformedProjects = response.data.slice(0, 4).map((complex) => ({
+            id: complex.id,
+            title: complex.name,
+            developer: complex.developer,
+            location: complex.address,
+            totalUnits: 'более 50 объектов',
+            availableUnits: complex.status === 'сдан' ? 'Сдано 10 объектов' : 'В процессе строительства',
+            status: complex.status,
+            yearBuilt: complex.yearBuilt,
+            price: complex.price
+          }));
+          
+          setProjects(transformedProjects);
+        } else {
+          setError('Ошибка получения данных');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) {
+    return (
+      <>
+        <SectionTitle>Жилые комплексы от ООО "{developerName || 'Фундамент Групп'}"</SectionTitle>
+        <LoadingMessage>Загрузка проектов...</LoadingMessage>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SectionTitle>Жилые комплексы от ООО "{developerName || 'Фундамент Групп'}"</SectionTitle>
+        <ErrorMessage>Ошибка: {error}</ErrorMessage>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <SectionTitle>Жилые комплексы от ООО "{developerName || 'Фундамент Групп'}"</SectionTitle>
+      <ProjectsGrid>
+        {projects.map((project) => (
+          <ProjectCard key={project.id} project={project} />
+        ))}
+      </ProjectsGrid>
+    </>
+  );
+};
 
 export default ProjectsSection; 
